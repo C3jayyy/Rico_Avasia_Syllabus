@@ -1,0 +1,478 @@
+<script id="layout" type="text/html">
+  <div id="layout-wrapper">
+    {{> navbar}}
+    <div id="page-content"></div>
+    {{> footer}}
+  </div>
+</script>
+
+<script id="navbar" type="text/html">
+  <header id="home">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <div class="container-fluid">
+        <a
+          class="navbar-brand text-decoration-none ps-2"
+          href="#/home"
+          style="color: rgb(169, 222, 224)"
+          >Sight See</a
+        >
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav me-3">
+            <li class="nav-item">
+              <a class="nav-link fs-5 text-white px-3" href="#/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-5 text-white px-3" href="#about-us"
+                >About us</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-5 text-white px-3" href="#contact"
+                >Contact</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-5 text-white px-3" href="#/profile"
+                >Profile</a
+              >
+            </li>
+          </ul>
+          <a id="logout-btn" href="#" class="btn btn-danger">Log out</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+</script>
+
+<script id="footer" type="text/html">
+  <footer class="bg-dark text-white py-2 text-center">
+    <div class="footer-nav d-flex flex-column align-items-center g-4">
+      <ul class="footer-link list-unstyled mb-0">
+        <li class="mb-2">
+          <a href="#home" class="text-white text-decoration-none">Home</a>
+        </li>
+        <li class="mb-2">
+          <a href="#about-us" class="text-white text-decoration-none">About</a>
+        </li>
+        <li class="mb-2">
+          <a href="#contact" class="text-white text-decoration-none">Contact</a>
+        </li>
+      </ul>
+      <button id="contact-btn" type="button" class="btn btn-primary">
+        Contact us
+      </button>
+    </div>
+    <small>&copy; 2025 Sight See. All Rights Reserved.</small>
+  </footer>
+</script>
+
+<script id="sign-up-page" type="text/html">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card shadow-sm p-3">
+          <div class="text-center mb-3">
+            <h4 class="mb-0">Sign Up</h4>
+          </div>
+
+          <form id="sign-up-form" novalidate>
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label for="fullname" class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  id="fullname"
+                  name="fullname"
+                  placeholder="Enter Full Name"
+                />
+                <span id="full-name-error" class="text-danger small"></span>
+              </div>
+
+              <div class="col-md-6">
+                <label for="nickname" class="form-label">Nickname</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  id="nickname"
+                  name="nickname"
+                  placeholder="Enter Nickname"
+                />
+                <span id="nickname-error" class="text-danger small"></span>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="username"
+                name="username"
+                placeholder="Enter username or email"
+              />
+              <span id="username-error" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-2">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control form-control-sm"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+              />
+              <span id="email-error" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-2">
+              <label for="address" class="form-label">Address</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="address"
+                name="address"
+                placeholder="Enter your address"
+              />
+              <span id="address-error" class="text-danger small"></span>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label for="birthday" class="form-label">Birthday</label>
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  id="birthday"
+                  name="birthday"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label for="contact" class="form-label">Contact Number</label>
+                <input
+                  type="tel"
+                  class="form-control form-control-sm"
+                  id="contact"
+                  name="contact"
+                  placeholder="Enter phone number"
+                />
+                <span id="contact-error" class="text-danger small"></span>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control form-control-sm"
+                id="password"
+                name="password"
+                placeholder="Enter password"
+              />
+              <span id="password-error" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-2">
+              <label for="confirm-password" class="form-label"
+                >Confirm Password</label
+              >
+              <input
+                type="password"
+                class="form-control form-control-sm"
+                id="confirm-password"
+                name="confirm-password"
+                placeholder="Confirm Password"
+              />
+              <span
+                id="confirm-password-error"
+                class="text-danger small"
+              ></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-2 btn-sm">
+              Sign Up
+            </button>
+
+            <p class="text-center small">
+              Already have an account? <a href="#/login">Login</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="login-page" type="text/html">
+  <div
+    class="container d-flex justify-content-center align-items-center vh-100"
+  >
+    <div class="card shadow p-4" style="width: 100%; max-width: 350px">
+      <div class="text-center mb-4">
+        <h4>Login</h4>
+      </div>
+
+      <form id="login-form" method="post">
+        <div class="mb-2">
+          <label for="username" class="form-label">Username or Email</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            placeholder="Enter username or email"
+            required
+          />
+        </div>
+
+        <div class="mb-2">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Enter password"
+            required
+          />
+        </div>
+
+        <div class="mb-2 form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="rememberMe"
+            name="remember"
+          />
+          <label class="form-check-label" for="rememberMe"> Remember me </label>
+        </div>
+
+        <button id="login-btn" type="submit" class="btn btn-primary w-100 mb-3">
+          Login
+        </button>
+
+        <div class="d-flex justify-content-between">
+          <a href="#/home" class="btn btn-danger w-100 mb-3">Cancel</a>
+        </div>
+        <a href="#" class="text-decoration-none">Forgot password?</a><br />
+        <p>
+          Don't have an account?<a href="#/signup" class="text-decoration-none"
+            >Sign up</a
+          >
+        </p>
+      </form>
+    </div>
+  </div>
+</script>
+
+<script id="home-page" type="text/html">
+  <main>
+    <section id="hero" class="hero-section d-flex align-items-center">
+      <div class="container text-center text-light">
+        <h1 class="display-4 fw-bold">Sight See</h1>
+        <p class="lead">Discover amazing places with Sight See</p>
+        <a
+          href="#/login"
+          class="btn btn-light btn-lg rounded-pill px-4 btn-hero"
+          >Travel now</a
+        >
+      </div>
+    </section>
+
+    <section id="about-us" class="about py-5">
+      <div class="container text-center py-5">
+        <h1>What is Sight See?</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. A animi
+          provident autem fuga asperiores, dolore unde. Voluptatum voluptatem
+          assumenda repellat, amet laborum deserunt magnam totam pariatur quis
+          eveniet doloremque provident.
+        </p>
+      </div>
+    </section>
+
+    <section id="content" class="content">
+      <h1 class="text-center">Popular Destinations</h1>
+      <div class="container d-flex justify-content-center mt-4">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="card h-100">
+              <img
+                src="/RICO_AVASIA_SYLLABUS/day4/root/img/Tokyo.jpg"
+                class="card-img-top"
+                alt="Tokyo"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Tokyo</h5>
+                <p class="card-text">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-4">
+            <div class="card h-100">
+              <img
+                src="/RICO_AVASIA_SYLLABUS/day4/root/img/Bahamas.jpg"
+                class="card-img-top"
+                alt="Bahamas"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Bahamas</h5>
+                <p class="card-text">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-4">
+            <div class="card h-100">
+              <img
+                src="/RICO_AVASIA_SYLLABUS/day4/root/img/Hanolulu.jpg"
+                class="card-img-top"
+                alt="Honolulu"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Honolulu</h5>
+                <p class="card-text">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact py-5">
+      <div class="container">
+        <h1 class="text-center py-4">Contact Us</h1>
+        <div class="row align-items-center text-center text-md-start">
+          <div class="col-md-6 mb-4 mb-md-0">
+            <h3 class="lh-base">
+              For any questions and inquiries, please email: example@gmail.com
+            </h3>
+          </div>
+          <div class="col-md-6">
+            <form action="">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="fname" class="form-label">First Name</label>
+                  <input
+                    type="text"
+                    id="fname"
+                    name="fname"
+                    class="form-control"
+                  />
+                  <span></span>
+                </div>
+                <div class="col-md-6">
+                  <label for="lname" class="form-label">Last Name</label>
+                  <input
+                    type="text"
+                    id="lname"
+                    name="lname"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3 mt-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="message" class="form-label">Write a message</label>
+                <textarea
+                  name="message"
+                  id="message"
+                  class="form-control"
+                  rows="4"
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</script>
+
+<script id="profile" type="text/html">
+  <main class="container" style="margin-top: 100px; margin-bottom: 100px;">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-body text-center bg-dark text-white rounded-top-4">
+            <h3>{{username}}</h3>
+            <p class="mb-0">{{email}}</p>
+          </div>
+
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Full Name</label>
+              <input
+                type="text"
+                id="edit-fullname"
+                class="form-control"
+                value="{{full_name}}"
+                disabled
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nickname</label>
+              <input
+                type="text"
+                id="edit-nickname"
+                class="form-control form-control-sm"
+                value="{{nick_name}}"
+                disabled
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Birthday</label>
+              <input
+                type="date"
+                id="edit-birthday"
+                class="form-control"
+                value="{{birthday}}"
+                disabled
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Contact Number</label>
+              <input
+                type="text"
+                id="edit-contact"
+                class="form-control form-control-sm"
+                value="{{contact_number}}"
+                disabled
+              />
+            </div>
+
+            <button id="update-btn" class="btn btn-primary w-100 mt-3">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</script>

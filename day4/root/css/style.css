@@ -1,0 +1,44 @@
+.nav-link {
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.nav-link:hover {
+  color: rgb(169, 222, 224) !important;
+}
+
+.hero-section {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("/RICO_AVASIA_SYLLABUS/day4/root/img/hero-background2.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 95vh;
+}
+
+.btn {
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.btn:hover {
+  background-color: rgb(169, 222, 224) !important;
+}
+
+.card-img-top {
+  height: 500px;
+  object-fit: cover;
+}
+
+.footer-link a {
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.footer-link a:hover {
+  color: rgb(169, 222, 224) !important;
+}

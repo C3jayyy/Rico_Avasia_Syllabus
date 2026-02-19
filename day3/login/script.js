@@ -1,6 +1,6 @@
-const form = document.querySelector("#signup");
-const output = document.getElementById("#signUpOutput");
-
+const form = document.querySelector("#sign-up-form");
+const output = document.getElementById("signUpOutput");
+/** 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -17,7 +17,7 @@ form.addEventListener("submit", function (event) {
   }
 
   console.log(formObject);
-});
+});*/
 
 function validateForm() {
   const fullName = document.getElementById("fname").value.trim();
@@ -92,49 +92,65 @@ function validateForm() {
   }
 }
 
-function resetErrors() {
-  document.getElementById("fullname-error").textContent = "";
-  document.getElementById("nickname-error").textContent = "";
-  document.getElementById("email-error").textContent = "";
-  document.getElementById("address-error").textContent = "";
-  document.getElementById("contact-error").textContent = "";
-  document.getElementById("password-error").textContent = "";
-}
+$(function () {
+  saveInputs();
+  function saveInputs() {
+    $("#sign-up-form").on("submit", function (event) {
+      event.preventDefault();
 
-var fullNameArr = [];
-var nicknameArr = [];
-var emailArr = [];
-var addressArr = [];
-var contactArr = [];
-var passwordArr = [];
+      const newUser = {
+        fullname: $("#fullname").val().trim(),
+        nickname: $("#nickname").val().trim(),
+        username: $("#username").val().trim(),
+        email: $("#email").val().trim(),
+        address: $("#address").val().trim(),
+        contact: $("#contact").val().trim(),
+        password: $("#password").val().trim(),
+        confirmPassword: $("#confirm-password").val().trim(),
+      };
 
-//Save form inputs into an Array
+      if (newUser.password !== newUser.confirmPassword) {
+        alert("Password do not match");
+        return;
+      }
 
-/**function saveInputs() {
-  var fullNameInput = document.getElementById("fname").value;
-  var nicknameInput = document.getElementById("nname").value;
-  var emailInput = document.getElementById("email").value;
-  var addressInput = document.getElementById("address").value;
-  var contactInput = document.getElementById("contact").value;
-  var passwordInput = document.getElementById("psw").value;
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      if (users.some((u) => u.username === newUser.username)) {
+        alert("Username already taken");
+        return;
+      }
 
-  fullNameArr.push(fullNameInput);
-  nicknameArr.push(nicknameInput);
-  emailArr.push(emailInput);
-  addressArr.push(addressInput);
-  contactArr.push(contactInput);
-  passwordArr.push(passwordInput);
+      delete newUser.confirmPassword;
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Registration successful! Please Login");
+      window.location.href = "login.html";
+    });
+  }
 
-  console.log({
-    fullNameArr,
-    nicknameArr,
-    emailArr,
-    addressArr,
-    contactArr,
-    passwordArr,
+  //Login
+  $("#login-form").on("submit", function (event) {
+    event.preventDefault();
+    const username = $("#username").val().trim();
+    const password = $("#password").val().trim();
+
+    let users = JSON.parse(localStorage.getItem("users"));
+    const user = users.find((u) => u.username === username);
+
+    if (user.password !== password) {
+      alert("Incorrect password");
+      return;
+    } else if (!user) {
+      alert("User not found!");
+      return;
+    } else {
+      localStorage.setItem("currentUrser", JSON.stringify(user));
+      alert("Login Successful");
+      window.location.href = "index.html";
+    }
   });
-}**/
-
+});
+/**
 document.getElementById("signup").addEventListener("submit", function (event) {
   const form = event.target;
   const formElements = form.elements;
@@ -147,4 +163,4 @@ document.getElementById("signup").addEventListener("submit", function (event) {
   }
 
   console.log(userArray);
-});
+}); **/
