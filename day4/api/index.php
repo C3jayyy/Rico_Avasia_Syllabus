@@ -1,43 +1,279 @@
 <?php
-require_once "config/db.php";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+use Psr\Http\Message\ResponseInterface as Response;
+use PSR\Http\Message\ServerRequestInterface as Request;
+use Slim\Factory\AppFactory;
 
-    $fullname = $_POST['fullname'] ?? '';
-    $nickname = $_POST['nickname'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $username = $_POST['username'] ?? '';
-    $address = $_POST['address'] ?? '';
-    $birthday = $_POST['birthday'] ?? '';
-    $contact = $_POST['contact'] ?? '';
-    $password = $_POST['password'] ?? '';
-    $hashesPassword = password_hash($password, PASSWORD_DEFAULT);
+require __DIR__ . "/vendor/autoload.php";
 
-    $sql = "INSERT INTO users (full_name, nick_name, email, username, address, birthday, contact_number, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+session_start();
 
-    $stmt = $conn->prepare($sql);
+$app = AppFactory::create();
 
-    try {
-        $stmt->execute([
-            $fullname,
-            $nickname,
-            $email,
-            $username,
-            $address,
-            $birthday,
-            $contact,
-            $hashesPassword
-        ]);
-        echo "User registered successfully";
-    } catch (PDOException $e) {
-        if ($e->getCode() == 23000) {
-            echo "Email or Username already exists";
-        } else {
-            echo "Error: " . $e->getMessage();
+$app->setBasePath('/RICO_AVASIA_SYLLABUS/day4/api');
+
+$app->addBodyParsingMiddleware();
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
+
+$pdo = new PDO("mysql:host=localhost;dbname=carljaysonrico", "root", "");
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+$app->get('/', function ($request, $response) {
+    $response->getBody()->write("Slim is working!");
+    return $response;
+});
+
+$app->post('/auth/login', function (Request $request, Response $response) use ($pdo) {
+
+    $data = $request->getParsedBody();
+
+    $username = $data['username'] ?? '';
+    $password = $data['password'] ?? '';
+
+    $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['id'] = $user['id'];
+
+        $payload = [
+            "status" => "success",
+            "message" => "Login Successfully"
+        ];
+    } else {
+        $payload = [
+            "status" => "error",
+            "message" => "Incorrect username or password"
+        ];
+    }
+    $response->getBody()->write(json_encode($payload));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->post('/auth/signup', function (Request $request, Response $response) use ($pdo) {
+
+    $data = $request->getParsedBody();
+
+    $fieldMap = [
+        'fullname' => 'full_name',
+        'nickname' => 'nick_name',
+        'email'    => 'email',
+        'username' => 'username',
+        'address'  => 'address',
+        'birthday' => 'birthday',
+        'contact'  => 'contact_number'
+    ];
+
+    $cleanData = [];
+
+    foreach ($fieldMap as $formKey => $dbColumn) {
+        $cleanData[$formKey] = isset($data[$formKey])
+            ? trim($data[$formKey])
+            : '';
+    }
+
+    $requiredFields = ['username', 'email', 'password'];
+    $missingFields = [];
+
+    foreach ($requiredFields as $field) {
+        if (empty($data[$field])) {
+            $missingFields[] = $field;
         }
     }
-    $stmt->closeCursor();
-} else {
-    echo "One or more fields are empty.";
-    var_dump($_POST);
-}
+
+    if (!empty($missingFields)) {
+        $payload = [
+            "status" => "error",
+            "message" => "Missing required fields",
+            "fields" => $missingFields
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    if (!filter_var($cleanData['email'], FILTER_VALIDATE_EMAIL)) {
+        $payload = [
+            "status" => "error",
+            "message" => "Invalid email format"
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    try {
+
+        $columns = [];
+        $placeholders = [];
+        $values = [];
+
+        foreach ($fieldMap as $formKey => $dbColumn) {
+
+            if ($cleanData[$formKey] !== '') {
+
+                $columns[] = $dbColumn;
+                $placeholders[] = '?';
+                $values[] = $cleanData[$formKey];
+            }
+        }
+
+        $hashedPassword = password_hash(trim($data['password']), PASSWORD_DEFAULT);
+
+        $columns[] = 'password';
+        $placeholders[] = '?';
+        $values[] = $hashedPassword;
+
+        $sql = "INSERT INTO users (" . implode(', ', $columns) . ")
+                VALUES (" . implode(', ', $placeholders) . ")";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($values);
+
+        $payload = [
+            "status" => "success",
+            "message" => "User registered successfully"
+        ];
+    } catch (PDOException $e) {
+
+        if ($e->getCode() == 23000) {
+            $payload = [
+                "status" => "error",
+                "message" => "Email or username already used"
+            ];
+        } else {
+            $payload = [
+                "status" => "error",
+                "message" => "Server error"
+            ];
+        }
+    }
+
+    $response->getBody()->write(json_encode($payload));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/auth/get', function (Request $request, Response $response) use ($pdo) {
+    if (empty($_SESSION['id'])) {
+        $payload = [
+            "status" => "error",
+            "message" => "Unathorized"
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $stmt = $pdo->prepare("SELECT full_name, nick_name, username, birthday, email, contact_number FROM users WHERE id = ?");
+
+    $stmt->execute([$_SESSION['id']]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user === false) {
+        $payload = [
+            "status" => "error",
+            "data" => $user
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $response->getBody()->write(json_encode($user));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/auth/check', function (Request $request, Response $response) use ($pdo) {
+    if (!isset($_SESSION['id'])) {
+        $payload = [
+            "status" => "error",
+            "message" => "Unauthenticated"
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $payload = [
+        "status" => "success",
+    ];
+
+    $response->getBody()->write(json_encode($payload));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->post('/auth/logout', function (Request $request, Response $response) {
+
+    $_SESSION = [];
+    session_unset();
+    session_destroy();
+
+    $payload = [
+        "status" => "sucess",
+    ];
+
+    $response->getBody()->write(json_encode($payload));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->post('/auth/update', function (Request $request, Response $response) use ($pdo) {
+    if (!isset($_SESSION['id'])) {
+        $payload = [
+            "status" => "error",
+            "message" => "Unathorize"
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $data = $request->getParsedBody();
+
+    $fieldMap = [
+        'full_name' => 'full_name',
+        'nick_name' => 'nick_name',
+        'birthday' => 'birthday',
+        'contact_number' => 'contact_number'
+    ];
+
+    $setParts = [];
+    $values = [];
+
+    foreach ($fieldMap as $formKey => $dbColumn) {
+        if (isset($data[$formKey]) && trim($data[$formKey]) !== '') {
+
+            $setParts[] = "$dbColumn = ?";
+            $values[] = trim($data[$formKey]);
+        }
+    }
+
+    if (empty($setParts)) {
+        $payload = [
+            "status" => "error",
+            "message" => "No valid fields to update"
+        ];
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $values[] = $_SESSION['id'];
+
+    $sql = "UPDATE users SET " . implode(', ', $setParts) . " WHERE id =?";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($values);
+
+    $payload = [
+        "status" => "success",
+        "message" => "Profile updated"
+    ];
+
+    $response->getBody()->write(json_encode($payload));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->run();
