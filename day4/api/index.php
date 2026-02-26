@@ -14,6 +14,26 @@ $app->setBasePath('/RICO_AVASIA_SYLLABUS/day4/api');
 
 $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
+
+$app->options('/{routes:.+}', function ($request, $response) {
+    return $response;
+});
+
+$app->add(function ($request, $handler) {
+
+    $origin = $request->getHeaderLine('Origin');
+    $response = $handler->handle($request);
+
+    if ($origin) {
+        $response = $response->withHeader('Access-Control-Allow-Origin', $origin);
+    }
+
+    return $response
+        ->withHeader('Access-Control-Allow-Headers', 'Content-Type')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        ->withHeader('Access-Control-Allow-Credentials', 'true');
+});
+
 $app->addErrorMiddleware(true, true, true);
 
 $pdo = new PDO("mysql:host=localhost;dbname=carljaysonrico", "root", "");
@@ -39,9 +59,12 @@ $app->post('/auth/login', function (Request $request, Response $response) use ($
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['id'] = $user['id'];
 
+        unset($user['password']);
+
         $payload = [
             "status" => "success",
-            "message" => "Login Successfully"
+            "message" => "Login Successfully",
+            "user" => $user
         ];
     } else {
         $payload = [
@@ -49,6 +72,7 @@ $app->post('/auth/login', function (Request $request, Response $response) use ($
             "message" => "Incorrect username or password"
         ];
     }
+    error_log("LOGIN SESSION ID: " . session_id());
     $response->getBody()->write(json_encode($payload));
     return $response->withHeader('Content-Type', 'application/json');
 });
@@ -193,6 +217,19 @@ $app->get('/auth/check', function (Request $request, Response $response) use ($p
             "status" => "error",
             "message" => "Unauthenticated"
         ];
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    $stmt = $pdo->prepare("SELECT id, username, full_name FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        $payload = [
+            "status" => "error",
+            "message" => "User not found"
+        ];
 
         $response->getBody()->write(json_encode($payload));
         return $response->withHeader('Content-Type', 'application/json');
@@ -200,8 +237,11 @@ $app->get('/auth/check', function (Request $request, Response $response) use ($p
 
     $payload = [
         "status" => "success",
+        "user" => $user
     ];
 
+    error_log("CHECK SESSION ID: " . session_id());
+    error_log("CHECK SESSION VALUE: " . ($_SESSION['id'] ?? 'NOT SET'));
     $response->getBody()->write(json_encode($payload));
     return $response->withHeader('Content-Type', 'application/json');
 });
@@ -213,7 +253,7 @@ $app->post('/auth/logout', function (Request $request, Response $response) {
     session_destroy();
 
     $payload = [
-        "status" => "sucess",
+        "status" => "success",
     ];
 
     $response->getBody()->write(json_encode($payload));

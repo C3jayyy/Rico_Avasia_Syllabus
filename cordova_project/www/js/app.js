@@ -140,7 +140,7 @@ $(document).ready(function () {
     Path.map("#/login").to(function () {
       $("#canvas").html($.Mustache.render("login-page", templateData));
 
-      $("#login-form").off("submit", "login-form");
+      $("#login-form").off("submit");
 
       $("#login-form").on("submit", function (e) {
         e.preventDefault();
@@ -157,8 +157,8 @@ $(document).ready(function () {
             password: $("#password").val(),
           },
           success: function (response) {
-            console.log("FULL LOGIN RESPONSE:", response);
-            alert(JSON.stringify(response));
+            console.log("LOGIN SUCCESS:", response);
+            alert("SUCCESS CALLBACK");
 
             if (response.status === "success") {
               currentUser = response.user;
@@ -167,6 +167,10 @@ $(document).ready(function () {
             } else {
               alert("Login failed: " + response.message);
             }
+          },
+          error: function (xhr, status, error) {
+            console.log("LOGIN ERROR:", xhr.responseText);
+            alert("ERROR CALLBACK");
           },
         });
       });

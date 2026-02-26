@@ -8,6 +8,16 @@
   color: rgb(169, 222, 224) !important;
 }
 
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff;
+  opacity: 0.85;
+  transition: 0.2s;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  opacity: 1;
+}
+
 .hero-section {
   background:
     linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
